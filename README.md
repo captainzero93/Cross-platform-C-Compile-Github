@@ -154,7 +154,7 @@ automake --version
 
 1. Clone or download this repository:
    ```bash
-   git clone https://github.com/yourusername/github-c-builder.git
+   git clone https://github.com/captainzero93/github-c-builder.git
    cd github-c-builder
    ```
 
