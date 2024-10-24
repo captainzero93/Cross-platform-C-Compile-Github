@@ -17,10 +17,14 @@ A Python script that automatically downloads and builds C projects from GitHub r
 - Python 3.8 or higher
 - Required packages:
   ```bash
-  pip install pathlib shutil
+  pip install pathlib
   ```
 
-### Windows Build Tools
+## Build Tools Installation
+
+### Windows
+
+#### 1. Native Windows Tools
 
 1. **Visual Studio Build Tools**
    - Download: [Visual Studio Build Tools 2022](https://aka.ms/vs/17/release/vs_buildtools.exe)
@@ -39,36 +43,44 @@ A Python script that automatically downloads and builds C projects from GitHub r
    - Download: [Git for Windows](https://git-scm.com/download/win)
    - During installation, select "Add to PATH"
 
-4. **MSYS2** (for Make and Autotools)
-   - Download: [MSYS2](https://www.msys2.org/)
-   - Install and open "MSYS2 MSYS" from Start Menu
-   - Run the following commands:
+#### 2. MSYS2 Environment (Required for Make and Autotools on Windows)
+MSYS2 provides Unix-like tools on Windows, including its own package manager called `pacman`.
+
+1. **Download and Install MSYS2**
+   - Download [MSYS2](https://www.msys2.org/)
+   - Run the installer (msys2-x86_64-yyyymmdd.exe)
+   - Complete the installation (default: C:\msys64)
+
+2. **Install Required Tools**
+   - Open "MSYS2 MINGW64" from Start Menu
+   - Run these commands in the MSYS2 terminal:
      ```bash
-     # Update package database and base packages
+     # Update MSYS2 first
+     pacman -Syu
+     # Close and reopen terminal when prompted
      pacman -Syu
 
-     # Close and reopen terminal when prompted, then run:
-     pacman -Syu
-
-     # Install development tools
-     pacman -S --needed base-devel mingw-w64-x86_64-toolchain autotools mingw-w64-x86_64-cmake
-
-     # Install specific tools
-     pacman -S make automake autoconf libtool
+     # Install MinGW-w64 toolchain and build tools
+     pacman -S --needed mingw-w64-x86_64-toolchain
+     pacman -S --needed mingw-w64-x64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-make mingw-w64-x86_64-autotools
+     pacman -S --needed autoconf automake libtool make
      ```
-   - Add to System PATH:
-     - Open "Edit the system environment variables"
-     - Click "Environment Variables"
-     - Edit "Path"
-     - Add:
-       ```
-       C:\msys64\usr\bin
-       C:\msys64\mingw64\bin
-       ```
 
-### Linux Build Tools
+3. **Add to System PATH**
+   - Open Windows Settings
+   - Search for "Environment Variables"
+   - Edit the "Path" variable
+   - Add these paths IN ORDER:
+     ```
+     C:\msys64\mingw64\bin
+     C:\msys64\usr\bin
+     ```
 
-For Debian/Ubuntu:
+### Linux
+
+Choose the commands for your distribution:
+
+#### Debian/Ubuntu
 ```bash
 # Update package list
 sudo apt update
@@ -86,7 +98,7 @@ sudo apt install -y git
 sudo apt install -y autoconf automake libtool
 ```
 
-For Fedora/RHEL:
+#### Fedora/RHEL
 ```bash
 # Install development tools
 sudo dnf groupinstall "Development Tools"
@@ -101,7 +113,7 @@ sudo dnf install git
 sudo dnf install autoconf automake libtool
 ```
 
-For Arch Linux:
+#### Arch Linux
 ```bash
 # Install development tools
 sudo pacman -S base-devel
@@ -114,6 +126,28 @@ sudo pacman -S git
 
 # Install Autotools
 sudo pacman -S autoconf automake libtool
+```
+
+### Verifying Installation
+
+#### Windows
+Open a new Command Prompt (not MSYS2) and verify:
+```cmd
+gcc --version
+make --version
+cmake --version
+autoconf --version
+automake --version
+```
+
+#### Linux
+Open a terminal and verify:
+```bash
+gcc --version
+make --version
+cmake --version
+autoconf --version
+automake --version
 ```
 
 ## Installation
@@ -158,17 +192,23 @@ github-c-builder/
 
 ### Windows Common Issues
 
-1. **"'make' is not recognized..."**
-   - Verify MSYS2 installation
-   - Check if paths are added to System PATH
-   - Log out and log back in or restart computer
+1. **Command not found errors**
+   - Verify PATH entries are correct
+   - Log out and log back in, or restart computer
+   - Check if binaries exist in the specified directories
+   - Ensure PATH order is correct (mingw64\bin before usr\bin)
 
 2. **Visual Studio Build Tools errors**
    - Verify installation is complete
    - Try running "Developer Command Prompt for VS 2022"
    - Repair or reinstall Visual Studio Build Tools
 
-3. **CMake configuration fails**
+3. **MSYS2 issues**
+   - Use "MSYS2 MINGW64" for package installation
+   - If updates fail, try `pacman -Syu --needed`
+   - For DLL errors, verify PATH order and MINGW64 packages
+
+4. **CMake configuration fails**
    - Ensure CMake is in System PATH
    - Check if the project supports Windows
    - Try running from "Developer Command Prompt for VS 2022"
@@ -176,7 +216,7 @@ github-c-builder/
 ### Linux Common Issues
 
 1. **Missing dependencies**
-   - Run `sudo apt update` (or equivalent)
+   - Run package manager update (apt update, etc.)
    - Install build-essential package
    - Check project-specific dependencies
 
@@ -197,6 +237,41 @@ github-c-builder/
    - Verify source files are properly cloned
    - Look for specific build instructions in project README
 
+## Windows Terminal Choice
+
+1. **For Installing Packages**
+   - Use "MSYS2 MINGW64" terminal
+
+2. **For Building Projects**
+   - Use regular Windows Command Prompt or PowerShell
+   - Or use "Developer Command Prompt for VS 2022"
+
+3. **When to use "MSYS2 MSYS"**
+   - Only if specifically required by a project
+   - Not recommended for general use
+
+## Maintenance
+
+### Windows MSYS2
+Update packages regularly:
+```bash
+# In MSYS2 MINGW64 terminal
+pacman -Syu
+```
+
+### Linux
+Keep build tools updated:
+```bash
+# Debian/Ubuntu
+sudo apt update && sudo apt upgrade
+
+# Fedora
+sudo dnf update
+
+# Arch Linux
+sudo pacman -Syu
+```
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit pull requests, report bugs, or suggest features.
@@ -204,12 +279,6 @@ Contributions are welcome! Please feel free to submit pull requests, report bugs
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Built using Python 3
-- Inspired by various build automation tools
-- Thanks to the open-source community
 
 ## Support
 
