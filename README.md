@@ -1,3 +1,5 @@
+edit"a few bugs needs fixing"
+
 # GitHub C Project Builder
 
 A Python script that automatically downloads and builds C projects from GitHub repositories. Supports multiple build systems including CMake, Make, and Autotools.
