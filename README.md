@@ -272,9 +272,18 @@ sudo dnf update
 sudo pacman -Syu
 ```
 
-## Contributing
+## Debugging
 
-Contributions are welcome! Please feel free to submit pull requests, report bugs, or suggest features.
+When errors occur, the builder provides detailed error messages including:
+- Build tool output
+- Git operation results
+- Directory operation status
+- Platform-specific error details
+
+Logs can be found in:
+- Build output in the /build directory
+- CMake configuration logs
+- MSBuild detailed output (Windows)
 
 ## License
 
